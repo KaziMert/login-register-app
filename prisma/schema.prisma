@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int         @id @default(autoincrement())
+  email            String      @unique
+  password         String
+  publicKey        String      @db.Text
+  createdAt        DateTime    @default(now())
+  privateKey       PrivateKey?
+  receivedMessages Message[]   @relation("ReceivedMessages")
+  sentMessages     Message[]   @relation("SentMessages")
+  files File[]
+}
+
+model PrivateKey {
+  id      Int    @id @default(autoincrement())
+  iv      String
+  data    String @db.Text
+  salt    String
+  authTag String
+
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+}
+
+model Message {
+  id           Int      @id @default(autoincrement())
+  encryptedKey String   @db.Text
+  iv           String
+  authTag      String
+  data         String   @db.Text
+  createdAt    DateTime @default(now())
+
+  senderId   Int?
+  sender     User? @relation("SentMessages", fields: [senderId], references: [id])
+
+  receiverId Int
+  receiver   User  @relation("ReceivedMessages", fields: [receiverId], references: [id])
+}
+model File {
+  id           Int      @id @default(autoincrement())
+  originalName String
+  mimeType     String
+  storedName   String   @unique
+  encryptedKey String   @db.Text
+  iv           String
+  authTag      String
+  createdAt    DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+}

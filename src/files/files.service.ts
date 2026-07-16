@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CryptoService } from '../crypto/crypto.service';
 import * as fs from 'fs';
 import * as path from 'path';
-import { v4 as uuidv4 } from 'uuid';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class FilesService {
@@ -23,7 +23,7 @@ export class FilesService {
     const base64Data = file.buffer.toString('base64');
     const encrypted = this.cryptoService.encryptMessage(base64Data, user.publicKey);
 
-    const storedName = `${uuidv4()}.enc`;
+    const storedName = `${crypto.randomUUID()}.enc`;
     const filePath = path.join(this.uploadDir, storedName);
 
     if (!fs.existsSync(this.uploadDir)) {

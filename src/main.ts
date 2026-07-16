@@ -27,9 +27,9 @@ async function bootstrap() {
     ],
   });
 
-  app.getHttpAdapter().get('/', (req, res) => {
-    res.redirect('/api');
-  });
+  app.getHttpAdapter().get('/', (req: any, res: any) => {
+  res.redirect('/api');
+});
 
   await app.listen(process.env.PORT ?? 3000);
 }
